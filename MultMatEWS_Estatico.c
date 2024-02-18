@@ -4,7 +4,7 @@
 #include <omp.h>
 
 
-#define TAM 10000
+#define TAM 1000
 
 void somarMatrizes(double matriz1[TAM][TAM], double matriz2[TAM][TAM], double resultado[TAM][TAM], int N, int thread_id, int num_threads) {
     //int inicio = thread_id * (N / num_threads);

@@ -6,7 +6,7 @@
 
 #define TAM 10000
 
-void somarMatrizes(double matriz1[TAM][TAM], double matriz2[TAM][TAM], double resultado[TAM][TAM], int N) {
+void somarMatrizes(double matriz1[TAM][TAM], double matriz2[TAM][TAM], double resultado[TAM][TAM], int N , int * nt) {
     //int inicio = thread_id * (N / num_threads);
     //int fim = (thread_id == num_threads - 1) ? N : (thread_id + 1) * (N / num_threads);
     
@@ -16,6 +16,7 @@ void somarMatrizes(double matriz1[TAM][TAM], double matriz2[TAM][TAM], double re
 	    int tamanho, resto, inicio, fim, num_threads, thread_id;
   
 	    num_threads = omp_get_num_threads();
+        *nt = num_threads;
 	    thread_id = omp_get_thread_num();		
 
 	    tamanho = (N)/num_threads;
@@ -102,7 +103,7 @@ int main(int argc, char *argv[]) {
     t_i = omp_get_wtime();
         
     // Calcular a soma das matrizes de forma paralela
-    somarMatrizes(matriz1, matriz2, resultado, N);
+    somarMatrizes(matriz1, matriz2, resultado, N , &num_threads);
 
     t_f = omp_get_wtime();
 

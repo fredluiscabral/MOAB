@@ -45,7 +45,7 @@ void multiplicarMatrizes(double matriz1[TAM][TAM], double matriz2[TAM][TAM], dou
 	        for (int j = 0; j < N; ++j) {
 	            double sum = 0.0;
 	            for (int k = 0; k < N; ++k) {
-	                        sum += getValue(matriz1, i , k) * getValue(matriz2, i,j);
+	                        sum += getValue(matriz1, i , k) * getValue(matriz2, k,j);
 	            }
 	            setValue (resultado ,i,j,sum);
 	        }

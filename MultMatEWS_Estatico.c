@@ -4,7 +4,7 @@
 #include <omp.h>
 
 
-#define TAM 1000
+#define TAM 10000
 
 void somarMatrizes(double matriz1[TAM][TAM], double matriz2[TAM][TAM], double resultado[TAM][TAM], int N, int thread_id, int num_threads) {
     //int inicio = thread_id * (N / num_threads);
@@ -86,8 +86,11 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            matriz1[i][j] = 1; //rand() % 100;
-            matriz2[i][j] = 2; //rand() % 100;
+            matriz1[i][j] = 2.0; //rand() % 100;
+	    if (i==j)
+            	matriz2[i][j] = 1.0; //rand() % 100;
+	    else
+		matriz2[i][j] = 0.0;    
         }
     }
 
@@ -109,6 +112,22 @@ int main(int argc, char *argv[]) {
         t_f = omp_get_wtime();
 
     }
+
+    int passou = 1;
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (matriz1[i][j] != 2.0)
+		    passou = 0;
+        }
+    }
+
+    if (passou == 1)
+	    printf ("Passou !!!\n");
+    else
+	    printf ("Falhou !!!\n");
+
+
 
     printf ("%d ; %.10f\n", num_threads,(double)(t_f - t_i));
 

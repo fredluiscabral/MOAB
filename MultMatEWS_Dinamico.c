@@ -3,12 +3,7 @@
 #include <time.h>
 #include <omp.h>
 
-
-//#define TAM 10000
-
 void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N, int thread_id, int num_threads) {
-    //int inicio = thread_id * (N / num_threads);
-    //int fim = (thread_id == num_threads - 1) ? N : (thread_id + 1) * (N / num_threads);
     
     int tamanho, resto, inicio, fim;
     
@@ -39,15 +34,6 @@ void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N, in
     
 }
 
-void imprimirMatriz(double *matriz, int N) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            printf("%f ", matriz[i+N*j]);
-        }
-        printf("\n");
-    }
-}
-
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         printf("Uso: %s <tamanho da matriz>\n", argv[0]);
@@ -66,21 +52,6 @@ int main(int argc, char *argv[]) {
     matriz1 = (double *)malloc(N*N * sizeof(double));
     matriz2 = (double *)malloc(N*N * sizeof(double));
     resultado = (double *)malloc(N*N * sizeof(double));
-
-/*
-
-    for (int i = 0; i < N; i++) {
-        matriz1[i] = (double *)malloc(N * sizeof(double));
-        matriz2[i] = (double *)malloc(N * sizeof(double));
-        resultado[i] = (double *)malloc(N * sizeof(double));
-    }
-*/
-
-/*
-   double matriz1[TAM][TAM];
-   double matriz2[TAM][TAM];
-   double resultado[TAM][TAM];
-*/
 
     // Preencher as matrizes com elementos aleatórios
     //srand(time(NULL));
@@ -129,27 +100,6 @@ int main(int argc, char *argv[]) {
 	    printf ("Falhou !!!\n");
 
     printf ("%d ; %.10f\n", num_threads,(double)(t_f - t_i));
-
-/*
-    printf("\nMatriz 1:\n");
-    imprimirMatriz(matriz1, N);
-
-    printf("\nMatriz 2:\n");
-    imprimirMatriz(matriz2, N);
-
-    printf("\nResultado da soma:\n");
-    imprimirMatriz(resultado, N);
-*/
-
-/*    
-    // Liberar memória alocada
-    for (int i = 0; i < N; i++) {
-        free(matriz1[i]);
-        free(matriz2[i]);
-        free(resultado[i]);
-    }
-
-    */
 
     free(matriz1);
     free(matriz2);

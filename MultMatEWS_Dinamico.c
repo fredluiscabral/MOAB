@@ -21,7 +21,7 @@ void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N, in
         fim = fim+resto;
     }	        		    
     
-
+    //#pragma omp simd collapse(2)
     for (int i = inicio; i < fim; ++i) {
         for (int j = 0; j < N; ++j) {
             double sum = 0.0;
@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Iniciar região paralela
+    t_i = omp_get_wtime();
     #pragma omp parallel
     {
 
@@ -76,14 +77,14 @@ int main(int argc, char *argv[]) {
 /*
         printf("Thread %d iniciada...\n", thread_id);
 */
-        t_i = omp_get_wtime();
+
         
         // Calcular a soma das matrizes de forma paralela
         multMatrizes(matriz1, matriz2, resultado, N, thread_id, num_threads);
 
-        t_f = omp_get_wtime();
-
     }
+
+    t_f = omp_get_wtime();
 
     int passou = 1;
 

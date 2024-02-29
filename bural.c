@@ -26,6 +26,7 @@ void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N) {
             fim = fim + resto;
         }	        		    
         
+        #pragma omp simd collapse(2)
         for (int i = inicio; i < fim; ++i) {
             for (int j = 0; j < N; ++j) {
                 double sum = 0.0;

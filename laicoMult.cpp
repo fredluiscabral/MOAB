@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     int N = atoi(argv[1]);
 
-    std::cout << "Iniciando ..." << std::endl;
+    std::cout << "Iniciando ......." << std::endl;
 
     // Criar as matrizes usando Eigen e Armadillo
     Eigen::MatrixXd mat1 = Eigen::MatrixXd::Constant(N, N, 2.0);
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     // Multiplicar matrizes usando sua função
 
-/*
+
     double *mat1_ptr, *iden_ptr, *resultado_ptr;
 
     alocarMatrizes(&mat1_ptr, &iden_ptr, &resultado_ptr, N);
@@ -51,12 +51,11 @@ int main(int argc, char* argv[]) {
 
 
     std::chrono::duration<double> diff_custom = end_custom - start_custom;
-    std::cout << "Sua função levou: " << diff_custom.count() << " segundos." << std::endl;
+    std::cout << "Bural levou: " << diff_custom.count() << " segundos." << std::endl;
 
     // Limpar memória alocada dinamicamente
     delete[] resultado_ptr;
 
-*/
 
     // Multiplicar matrizes usando Eigen e Armadillo
     auto start_eigen = std::chrono::high_resolution_clock::now();

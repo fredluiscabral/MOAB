@@ -4,46 +4,6 @@
 #include <stdlib.h>
 #include "bural.h"
 
-void multMatrizes2(double* matriz1, double* matriz2, double* resultado, int N, int num_threads, int thread_id) {
-
-
-//    #pragma omp parallel 
-  //  {
-
-    //    int num_threads = omp_get_num_threads();
-      //  int thread_id = omp_get_thread_num();
-
-        int tamanho, resto, inicio, fim;
-        
-        tamanho = (N) / num_threads;
-        resto = (N) % num_threads;
-        inicio = tamanho * thread_id;
-        fim = inicio + tamanho - 1;
-        
-        if (thread_id + 1 <= resto) {
-            inicio = inicio + thread_id;
-            fim = fim + thread_id + 1;
-        } else {
-            inicio = inicio + resto;
-            fim = fim + resto;
-        }	        		    
-        
-        for (int i = inicio; i < fim; ++i) {
-            for (int j = 0; j < N; ++j) {
-                double sum = 0.0;
-                for (int k = 0; k < N; ++k) {
-                    sum += matriz1[i * N + k] * matriz2[k * N + j];
-                }
-                resultado[i * N + j] = sum;
-            }
-        }
-
-    //}
-
-}
-
-
-
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         printf("Uso: %s <tamanho da matriz>\n", argv[0]);
@@ -67,18 +27,8 @@ int main(int argc, char *argv[]) {
 
     t_i = omp_get_wtime();
 
-    #pragma omp parallel 
-    {
-
-        int num_threads = omp_get_num_threads();
-        int thread_id = omp_get_thread_num();
-
-
-        // Calcular a multiplicação das matrizes de forma paralela
-        multMatrizes2(matriz1, matriz2, resultado, N, num_threads, thread_id);
-        
-
-    }
+    // Calcular a multiplicação das matrizes de forma paralela
+    multMatrizes(matriz1, matriz2, resultado, N);
 
     t_f = omp_get_wtime();
 

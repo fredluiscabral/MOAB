@@ -1,7 +1,6 @@
 #include "bural.h"
 #include <iostream>
 #include <chrono>
-#include <Eigen/Dense>
 #include <armadillo>
 #include "Matrix.hpp"
 #include "BasicStrategy.hpp"

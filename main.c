@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "bural.h"
-#include <omp.h> // Garante que omp_get_wtime() possa ser utilizado
+#include "bural.h" // Certifique-se de que este arquivo contém a declaração de alocarMatriz e preencherMatrizComValor
+#include <omp.h>
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -11,18 +11,18 @@ int main(int argc, char *argv[]) {
 
     int N = atoi(argv[1]);
     int N2 = N * N; // Tamanho da matriz resultante do produto de Kronecker
-
     double *matriz1, *matriz2, *resultado, *resultadoKronecker;
 
-    // Alocar memória para as matrizes
-    matriz1 = (double *)malloc(N * N * sizeof(double));
-    matriz2 = (double *)malloc(N * N * sizeof(double));
-    resultado = (double *)malloc(N * N * sizeof(double));
-    resultadoKronecker = (double *)malloc(N2 * N2 * sizeof(double)); // Matriz maior para o produto de Kronecker
+    // Alocar memória para as matrizes usando a nova função alocarMatriz
+    alocarMatriz(&matriz1, N);
+    alocarMatriz(&matriz2, N);
+    alocarMatriz(&resultado, N); // Para a multiplicação de matrizes, o resultado tem tamanho N * N
+    alocarMatriz(&resultadoKronecker, N2); // Para o produto de Kronecker, o resultado tem tamanho N2 * N2
 
-    // Preencher as matrizes com elementos constantes (por exemplo, 2.0 e 3.0 para verificar o produto de Kronecker)
-    preencherMatrizComValor (matriz1, N, 2); // Assumindo que essa função preencha uma matriz com valor especificado
-    preencherMatrizComValor(matriz2, N, 3); // Assumindo que essa função preencha uma matriz com valor especificado
+    // Preencher as matrizes com valores especificados usando preencherMatrizComValor
+    preencherMatrizComValor(matriz1, N, 2.0);
+    preencherMatrizComValor(matriz2, N, 3.0);
+
     double t_i = omp_get_wtime();
 
     // Calcular a multiplicação das matrizes de forma paralela
@@ -33,12 +33,11 @@ int main(int argc, char *argv[]) {
 
     // Realizar o produto de Kronecker
     t_i = omp_get_wtime();
-    produtoKronecker(matriz1, matriz2, resultadoKronecker, N); // Assumindo a existência desta função
+    produtoKronecker(matriz1, matriz2, resultadoKronecker, N);
     t_f = omp_get_wtime();
     printf("Produto de Kronecker levou %.10f segundos\n", (double)(t_f - t_i));
 
     // Verificação do resultado do produto de Kronecker
-    // Considerando matriz1 e matriz2 preenchidas com 2.0 e 3.0, respectivamente
     int passou = 1;
     for (int i = 0; i < N2 * N2; i++) {
         if (resultadoKronecker[i] != 6.0) { // 2 * 3 = 6

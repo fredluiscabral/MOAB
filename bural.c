@@ -59,11 +59,14 @@ void preencherMatrizComValor(double* matriz, int N, double valor) {
 }
 
 
-void alocarMatrizes(double** matriz1, double** matriz2, double** resultado, int N) {
-    *matriz1 = (double*)malloc(N * N * sizeof(double));
-    *matriz2 = (double*)malloc(N * N * sizeof(double));
-    *resultado = (double*)malloc(N * N * sizeof(double));
+void alocarMatriz(double** matriz, int N) {
+    *matriz = (double*)malloc(N * N * sizeof(double));
+    if (*matriz == NULL) {
+        fprintf(stderr, "Falha na alocação de memória\n");
+        exit(EXIT_FAILURE);
+    }
 }
+
 
 void produtoKronecker(double* A, double* B, double* C, int N) {
     int N2 = N * N; // Dimensão da matriz resultante é N^2 x N^2

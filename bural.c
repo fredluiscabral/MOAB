@@ -1,6 +1,8 @@
 // Arquivo: matmul_lib.c
 
 #include "bural.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N) {
 
@@ -58,7 +60,7 @@ void preencherMatrizComValor(double* matriz, int N, double valor) {
     }
 }
 
-
+// Implementações das funções, incluindo alocarMatriz
 void alocarMatriz(double** matriz, int N) {
     *matriz = (double*)malloc(N * N * sizeof(double));
     if (*matriz == NULL) {

@@ -15,7 +15,7 @@ void preencherMatrizes(double* matriz1, double* matriz2, int N);
 void preencherMatrizComValor(double* matriz, int N, double valor);
 
 // Função para alocar memória para as matrizes
-void alocarMatrizes(double** matriz1, double** matriz2, double** resultado, int N);
+void alocarMatriz(double** matriz, int N);
 
 void produtoKronecker(double* A, double* B, double* C, int N);
 

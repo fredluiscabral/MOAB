@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "bural.h" // Certifique-se de que este arquivo contém a declaração de alocarMatriz e preencherMatrizComValor
+#include "bural.h"
 #include <omp.h>
 
 int main(int argc, char *argv[]) {
@@ -11,14 +11,16 @@ int main(int argc, char *argv[]) {
 
     int N = atoi(argv[1]);
     int N2 = N * N; // Tamanho da matriz resultante do produto de Kronecker
+
     double *matriz1, *matriz2, *resultado, *resultadoKronecker;
 
-    // Alocar memória para as matrizes usando a nova função alocarMatriz
+    // Alocar memória para as matrizes e o resultado usando a função alocarMatriz
     alocarMatriz(&matriz1, N);
     alocarMatriz(&matriz2, N);
-    alocarMatriz(&resultado, N); // Para a multiplicação de matrizes, o resultado tem tamanho N * N
-    alocarMatriz(&resultadoKronecker, N2); // Para o produto de Kronecker, o resultado tem tamanho N2 * N2
+    alocarMatriz(&resultado, N); // Alocar espaço para o resultado da multiplicação de matrizes
+    alocarMatriz(&resultadoKronecker, N2); // Alocar espaço para o resultado do produto de Kronecker
 
+    // O restante do código...
     // Preencher as matrizes com valores especificados usando preencherMatrizComValor
     preencherMatrizComValor(matriz1, N, 2.0);
     preencherMatrizComValor(matriz2, N, 3.0);

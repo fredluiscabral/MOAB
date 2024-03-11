@@ -58,6 +58,8 @@ int main(int argc, char** argv) {
         // Substitua isso pelas suas funções de inicialização
     }
 
+    startTime = MPI_Wtime();
+
     // Distribui as matrizes para todos os processos
     if (rank == 0) {
         for (int i = 1; i < size; i++) {
@@ -71,8 +73,18 @@ int main(int argc, char** argv) {
         MPI_Recv(matriz2, N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
+    calcTime = MPI_Wtime();
     // Realiza a multiplicação de matrizes em paralelo
     multMatrizesMPI(matriz1, matriz2, resultado, N, rank, size);
+    calcTime = MPI_Wtime() - calcTime;
+
+    // Encontra o tempo máximo de cálculo entre todos os processos
+    MPI_Reduce(&calcTime, &maxCalcTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("Total time: %f seconds\n", endTime - startTime);
+        printf("Max calculation time: %f seconds\n", maxCalcTime);
+    }
 
     // Processo raiz pode fazer algo com o resultado
     if (rank == 0) {

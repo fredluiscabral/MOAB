@@ -2,102 +2,86 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Função para multiplicar matrizes em paralelo usando MPI
-void multMatrizesMPI(const double* matriz1, const double* matriz2, double* resultado, int N, int rank, int size) {
-    int linhasPorProcesso = N / size; // Linhas de matriz1 distribuídas por processo
-    int extra = N % size; // Linhas extras se N não é divisível por size
-    int linhas = (rank < extra) ? linhasPorProcesso + 1 : linhasPorProcesso;
-    int inicio = rank * linhasPorProcesso + (rank < extra ? rank : extra);
-    
-    // Buffer para armazenar a submatriz resultante calculada por este processo
-    double* subResultado = (double*)malloc(linhas * N * sizeof(double));
-
-    // Cada processo calcula sua parte da matriz resultante
-    for (int i = 0; i < linhas; ++i) {
-        for (int j = 0; j < N; ++j) {
-            double sum = 0.0;
-            for (int k = 0; k < N; ++k) {
-                sum += matriz1[(i + inicio) * N + k] * matriz2[k * N + j];
-            }
-            subResultado[i * N + j] = sum;
-        }
+void inicializaMatriz(double *matriz, int N, double valor) {
+    for (int i = 0; i < N * N; i++) {
+        matriz[i] = valor;
     }
-
-    // Reúne as submatrizes resultantes de todos os processos na matriz de resultado final no processo raiz
-    if (rank < extra) {
-        MPI_Gather(subResultado, linhas * N, MPI_DOUBLE, resultado, linhas * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    } else {
-        MPI_Gather(subResultado, linhasPorProcesso * N, MPI_DOUBLE, resultado, linhasPorProcesso * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    }
-
-    free(subResultado);
 }
 
-int main(int argc, char** argv) {
+void multiplySegment(double *local_A, double *B, double *local_C, int N, int local_N) {
+    for (int i = 0; i < local_N; i++) {
+        for (int j = 0; j < N; j++) {
+            double sum = 0.0;
+            for (int k = 0; k < N; k++) {
+                sum += local_A[i * N + k] * B[k * N + j];
+            }
+            local_C[i * N + j] = sum;
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
     int rank, size, N;
+    double *A, *B, *C, *local_A, *local_C, startTime, endTime, calcTime, maxCalcTime;
+
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    // Argumento: tamanho N da matriz
     if (argc != 2) {
-        if (rank == 0) printf("Uso: mpirun -np <procs> %s <N>\n", argv[0]);
-        MPI_Finalize();
-        return 1;
+        if (rank == 0) fprintf(stderr, "Usage: mpirun -np <num_procs> %s <N>\n", argv[0]);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
+
     N = atoi(argv[1]);
+    int local_N = N / size; // Assumindo que N é divisível por size
 
-    double *matriz1 = NULL, *matriz2 = NULL, *resultado = NULL;
-    //double *A, *B, *C, *local_A, *local_C;
-    double startTime, endTime, calcTime, maxCalcTime;
-    // Processo raiz aloca e inicializa as matrizes
     if (rank == 0) {
-        matriz1 = (double*)malloc(N * N * sizeof(double));
-        matriz2 = (double*)malloc(N * N * sizeof(double));
-        resultado = (double*)malloc(N * N * sizeof(double));
-        // Inicialização das matrizes
-        // Substitua isso pelas suas funções de inicialização
+        A = (double *)malloc(N * N * sizeof(double));
+        B = (double *)malloc(N * N * sizeof(double));
+        inicializaMatriz(A, N, 2.0);
+        inicializaMatriz(B, N, 3.0);
     }
 
-    startTime = MPI_Wtime();
+    local_A = (double *)malloc(local_N * N * sizeof(double));
+    local_C = (double *)malloc(local_N * N * sizeof(double));
 
-    // Distribui as matrizes para todos os processos
-    if (rank == 0) {
-        for (int i = 1; i < size; i++) {
-            MPI_Send(matriz1, N*N, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-            MPI_Send(matriz2, N*N, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-        }
-    } else {
-        matriz1 = (double*)malloc(N * N * sizeof(double));
-        matriz2 = (double*)malloc(N * N * sizeof(double));
-        MPI_Recv(matriz1, N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Recv(matriz2, N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
+    MPI_Scatter(A, local_N * N, MPI_DOUBLE, local_A, local_N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(B, N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     calcTime = MPI_Wtime();
-    // Realiza a multiplicação de matrizes em paralelo
-    multMatrizesMPI(matriz1, matriz2, resultado, N, rank, size);
+    multiplySegment(local_A, B, local_C, N, local_N);
     calcTime = MPI_Wtime() - calcTime;
 
-    endTime = MPI_Wtime();
-    // Encontra o tempo máximo de cálculo entre todos os processos
-    MPI_Reduce(&calcTime, &maxCalcTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
     if (rank == 0) {
-        printf("Total time: %f seconds\n", endTime - startTime);
-        printf("Max calculation time: %f seconds\n", maxCalcTime);
+        C = (double *)malloc(N * N * sizeof(double));
     }
 
-    // Processo raiz pode fazer algo com o resultado
-    if (rank == 0) {
-        // Exibir ou verificar o resultado
-    }
+    MPI_Gather(local_C, local_N * N, MPI_DOUBLE, C, local_N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    // Limpeza
-    free(matriz1);
-    free(matriz2);
-    if (rank == 0) free(resultado);
+    // Verificação do resultado no processo raiz
+    if (rank == 0) {
+        int correct = 1;
+        for (int i = 0; i < N * N; i++) {
+            if (C[i] != 6.0 * N) {
+                correct = 0;
+                break;
+            }
+        }
+        if (correct) {
+            printf("Resultado correto.\n");
+        } else {
+            printf("Resultado incorreto.\n");
+        }
+        free(C);
+    }
 
     MPI_Finalize();
+    free(local_A);
+    free(local_C);
+    if (rank == 0) {
+        free(A);
+        free(B);
+    }
     return 0;
-}    
+}

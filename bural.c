@@ -58,46 +58,33 @@ void alocarMatrizes(double** matriz1, double** matriz2, double** resultado, int 
     *resultado = (double*)malloc(N * N * sizeof(double));
 }
 
-
-#include <omp.h>
-
 void produtoKronecker(double* A, double* B, double* C, int N) {
-    #pragma omp parallel num_threads(N*N)
+    int N2 = N * N; // Dimensão da matriz resultante é N^2 x N^2
+    #pragma omp parallel num_threads(N2*N2)
     {
         int num_threads = omp_get_num_threads();
         int thread_id = omp_get_thread_num();
 
-        // Cada thread trabalha em uma parte da matriz C.
-        int tamanho = (N * N) / num_threads; // Total de elementos divididos pelo número de threads
-        int resto = (N * N) % num_threads;
-        int inicio = tamanho * thread_id;
-        int fim = inicio + tamanho - 1;
-        
-        if (thread_id < resto) {
-            inicio += thread_id; // Threads com menor ID pegam um elemento extra se houver resto
-            fim += thread_id + 1;
-        } else {
-            inicio += resto;
-            fim += resto;
-        }
+        // Divisão do trabalho entre as threads de forma mais apropriada.
+        int inicio = (N2 * N2 * thread_id) / num_threads;
+        int fim = (N2 * N2 * (thread_id + 1)) / num_threads - 1;
 
-        // Cada thread calcula os elementos de C para os quais é responsável
         for (int idx = inicio; idx <= fim; ++idx) {
-            // Calcula os índices i e j na matriz resultante C
-            int i = idx / (N*N); // Índice da linha em C
-            int j = idx % (N*N); // Índice da coluna em C
-            
-            // Calcula os índices a_i, a_j, b_i, b_j nas matrizes originais A e B
+            int i = idx / N2;
+            int j = idx % N2;
+
+            // Índices na matriz A e B derivados de i e j.
             int a_i = i / N; 
             int a_j = i % N;
             int b_i = j / N;
             int b_j = j % N;
 
-            // Produto tensorial de elementos (Kronecker)
+            // Calculando o produto tensorial.
             C[idx] = A[a_i * N + a_j] * B[b_i * N + b_j];
         }
     }
 }
+
 
 
 

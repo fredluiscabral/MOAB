@@ -8,7 +8,8 @@ void inicializaMatriz(double *matriz, int N, double valor) {
     }
 }
 
-void multiplySegment(double *local_A, double *B, double *local_C, int N, int local_N) {
+void multiplySegment(double *local_A, double *B, double *local_C, int N, int local_N, double *calcTime) {
+    double startTime = MPI_Wtime();
     for (int i = 0; i < local_N; i++) {
         for (int j = 0; j < N; j++) {
             double sum = 0.0;
@@ -18,11 +19,12 @@ void multiplySegment(double *local_A, double *B, double *local_C, int N, int loc
             local_C[i * N + j] = sum;
         }
     }
+    *calcTime = MPI_Wtime() - startTime;
 }
 
 int main(int argc, char *argv[]) {
     int rank, size, N;
-    double *A, *B, *C, *local_A, *local_C, startTime, endTime, calcTime, maxCalcTime;
+    double *A, *B, *C, *local_A, *local_C, calcTime, maxCalcTime;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -39,6 +41,7 @@ int main(int argc, char *argv[]) {
     if (rank == 0) {
         A = (double *)malloc(N * N * sizeof(double));
         B = (double *)malloc(N * N * sizeof(double));
+        C = (double *)malloc(N * N * sizeof(double));
         inicializaMatriz(A, N, 2.0);
         inicializaMatriz(B, N, 3.0);
     }
@@ -49,39 +52,24 @@ int main(int argc, char *argv[]) {
     MPI_Scatter(A, local_N * N, MPI_DOUBLE, local_A, local_N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(B, N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    calcTime = MPI_Wtime();
-    multiplySegment(local_A, B, local_C, N, local_N);
-    calcTime = MPI_Wtime() - calcTime;
-
-    if (rank == 0) {
-        C = (double *)malloc(N * N * sizeof(double));
-    }
+    multiplySegment(local_A, B, local_C, N, local_N, &calcTime);
 
     MPI_Gather(local_C, local_N * N, MPI_DOUBLE, C, local_N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    // Verificação do resultado no processo raiz
+    // Encontrar o tempo máximo de cálculo entre todos os processos
+    MPI_Reduce(&calcTime, &maxCalcTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
     if (rank == 0) {
-        int correct = 1;
-        for (int i = 0; i < N * N; i++) {
-            if (C[i] != 6.0 * N) {
-                correct = 0;
-                break;
-            }
-        }
-        if (correct) {
-            printf("Resultado correto.\n");
-        } else {
-            printf("Resultado incorreto.\n");
-        }
-        free(C);
+        printf("Max calculation time: %f seconds\n", maxCalcTime);
     }
 
     MPI_Finalize();
-    free(local_A);
-    free(local_C);
     if (rank == 0) {
         free(A);
         free(B);
+        free(C);
     }
+    free(local_A);
+    free(local_C);
     return 0;
 }

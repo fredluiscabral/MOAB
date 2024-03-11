@@ -87,6 +87,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
+
+    t_i = omp_get_wtime();
     // Iniciar região paralela
     #pragma omp parallel
     {
@@ -97,14 +99,13 @@ int main(int argc, char *argv[]) {
 /*
         printf("Thread %d iniciada...\n", thread_id);
 */
-        t_i = omp_get_wtime();
         
         // Calcular a soma das matrizes de forma paralela
         somarMatrizes(matriz1, matriz2, resultado, N, thread_id, num_threads);
 
-        t_f = omp_get_wtime();
-
     }
+
+    t_f = omp_get_wtime();
 
     printf ("%d ; %.10f\n", num_threads,(double)(t_f - t_i));
 

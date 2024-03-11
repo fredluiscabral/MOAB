@@ -12,11 +12,7 @@ void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N);
 // Função para preencher matrizes com valores constantes
 void preencherMatrizes(double* matriz1, double* matriz2, int N);
 
-void preencherMatrizComValor(double* matriz, int N, double valor);
-
 // Função para alocar memória para as matrizes
-void alocarMatriz(double** matriz, int N);
-
-void produtoKronecker(double* A, double* B, double* C, int N);
+void alocarMatrizes(double** matriz1, double** matriz2, double** resultado, int N);
 
 #endif // MATMUL_LIB_H

@@ -2,11 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <Eigen/Dense>
-#include <armadillo>
-#include "Matrix.hpp"
-#include "BasicStrategy.hpp"
-#include "EigenSumStrategy.hpp" 
-#include "mtx_io.hpp"
+//#include <armadillo>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -65,8 +61,8 @@ int main(int argc, char* argv[]) {
     Eigen::MatrixXd mat1 = Eigen::MatrixXd::Constant(N, N, 2.0);
     Eigen::MatrixXd iden = Eigen::MatrixXd::Identity(N, N);
 
-    arma::mat A = arma::ones<arma::mat>(N, N) * 2.0;
-    arma::mat I = arma::eye<arma::mat>(N, N);
+//    arma::mat A = arma::ones<arma::mat>(N, N) * 2.0;
+//    arma::mat I = arma::eye<arma::mat>(N, N);
 
     // Multiplicar matrizes usando sua função
 
@@ -99,8 +95,8 @@ int main(int argc, char* argv[]) {
     Eigen::MatrixXd result_eigen = mat1 * iden;
     auto stop_eigen = std::chrono::high_resolution_clock::now();
 
-    arma::mat result_armadillo = A * I;
-    auto end_armadillo = std::chrono::high_resolution_clock::now();
+//    arma::mat result_armadillo = A * I;
+//    auto end_armadillo = std::chrono::high_resolution_clock::now();
 
     // Verificar o resultado opcionalmente
     for (int i = 0; i < result_eigen.rows(); ++i) {
@@ -112,20 +108,20 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    for (int i = 0; i < static_cast<int>(result_armadillo.n_rows); ++i) {
-        for (int j = 0; j < static_cast<int>(result_armadillo.n_cols); ++j) {
-            if (result_armadillo(i, j) != 2.0) {
-                std::cout << "Erro no resultado Armadillo ..." << std::endl;
-                return -1;
-            }
-        }
-    }
+//    for (int i = 0; i < static_cast<int>(result_armadillo.n_rows); ++i) {
+//        for (int j = 0; j < static_cast<int>(result_armadillo.n_cols); ++j) {
+//            if (result_armadillo(i, j) != 2.0) {
+//                std::cout << "Erro no resultado Armadillo ..." << std::endl;
+//                return -1;
+//            }
+//        }
+//    }
 
     std::chrono::duration<double> diff_eigen = stop_eigen - start_eigen;
-    std::chrono::duration<double> diff_armadillo = end_armadillo - start_eigen;
+//    std::chrono::duration<double> diff_armadillo = end_armadillo - start_eigen;
 
     std::cout << "Eigen levou: " << diff_eigen.count() << " segundos." << std::endl;
-    std::cout << "Armadillo levou: " << diff_armadillo.count() << " segundos." << std::endl;
+//    std::cout << "Armadillo levou: " << diff_armadillo.count() << " segundos." << std::endl;
 
     return 0;
 }

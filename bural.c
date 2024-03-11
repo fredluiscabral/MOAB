@@ -52,6 +52,13 @@ void preencherMatrizes(double* matriz1, double* matriz2, int N) {
     }
 }
 
+void preencherMatrizComValor(double* matriz, int N, double valor) {
+    for (int i = 0; i < N * N; i++) {
+        matriz[i] = valor;
+    }
+}
+
+
 void alocarMatrizes(double** matriz1, double** matriz2, double** resultado, int N) {
     *matriz1 = (double*)malloc(N * N * sizeof(double));
     *matriz2 = (double*)malloc(N * N * sizeof(double));

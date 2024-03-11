@@ -48,7 +48,8 @@ int main(int argc, char** argv) {
     N = atoi(argv[1]);
 
     double *matriz1 = NULL, *matriz2 = NULL, *resultado = NULL;
-
+    //double *A, *B, *C, *local_A, *local_C;
+    double startTime, endTime, calcTime, maxCalcTime;
     // Processo raiz aloca e inicializa as matrizes
     if (rank == 0) {
         matriz1 = (double*)malloc(N * N * sizeof(double));

@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
     resultadoKronecker = (double *)malloc(N2 * N2 * sizeof(double)); // Matriz maior para o produto de Kronecker
 
     // Preencher as matrizes com elementos constantes (por exemplo, 2.0 e 3.0 para verificar o produto de Kronecker)
-    preencherMatrizes(matriz1, N, 2); // Assumindo que essa função preencha uma matriz com valor especificado
-    preencherMatrizes(matriz1, N, 3); // Assumindo que essa função preencha uma matriz com valor especificado
+    preencherMatrizComValor (matriz1, N, 2); // Assumindo que essa função preencha uma matriz com valor especificado
+    preencherMatrizComValor(matriz2, N, 3); // Assumindo que essa função preencha uma matriz com valor especificado
     double t_i = omp_get_wtime();
 
     // Calcular a multiplicação das matrizes de forma paralela

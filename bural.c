@@ -6,7 +6,6 @@
 
 void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N) {
 
-
     #pragma omp parallel num_threads(N)
     {
 
@@ -28,7 +27,8 @@ void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N) {
             fim = fim + resto;
         }	        		    
         
-        for (int i = inicio; i < fim; ++i) {
+
+        for (int i = inicio; i <= fim; ++i) {
             for (int j = 0; j < N; ++j) {
                 double sum = 0.0;
                 for (int k = 0; k < N; ++k) {

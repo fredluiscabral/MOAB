@@ -79,6 +79,7 @@ int main(int argc, char** argv) {
     multMatrizesMPI(matriz1, matriz2, resultado, N, rank, size);
     calcTime = MPI_Wtime() - calcTime;
 
+    endTime = MPI_Wtime();
     // Encontra o tempo máximo de cálculo entre todos os processos
     MPI_Reduce(&calcTime, &maxCalcTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 

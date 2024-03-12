@@ -38,16 +38,14 @@ int main(int argc, char *argv[]) {
     N = atoi(argv[1]);
     int local_N = N / size; // Assumindo que N é divisível por size
 
-    // Alocação de A apenas no processo raiz
     if (rank == 0) {
         A = (double *)malloc(N * N * sizeof(double));
         C = (double *)malloc(N * N * sizeof(double));
         inicializaMatriz(A, N, 2.0);
     }
-    
-    // Alocação de B em todos os processos
+
     B = (double *)malloc(N * N * sizeof(double));
-    if(rank == 0) {
+    if (rank == 0) {
         inicializaMatriz(B, N, 3.0);
     }
 
@@ -60,6 +58,23 @@ int main(int argc, char *argv[]) {
     multiplySegment(local_A, B, local_C, N, local_N, &calcTime);
 
     MPI_Gather(local_C, local_N * N, MPI_DOUBLE, C, local_N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    // Verificação do resultado no processo raiz
+    if (rank == 0) {
+        int resultadoCorreto = 1;
+        for (int i = 0; i < N * N; i++) {
+            if (C[i] != 2.0 * 3.0 * N) {
+                resultadoCorreto = 0;
+                break;
+            }
+        }
+
+        if (resultadoCorreto) {
+            printf("Resultado correto.\n");
+        } else {
+            printf("Resultado incorreto.\n");
+        }
+    }
 
     MPI_Reduce(&calcTime, &maxCalcTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 

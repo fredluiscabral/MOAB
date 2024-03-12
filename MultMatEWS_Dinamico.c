@@ -54,19 +54,12 @@ int main(int argc, char *argv[]) {
     matriz2 = (double *)malloc(N*N * sizeof(double));
     resultado = (double *)malloc(N*N * sizeof(double));
 
-    // Preencher as matrizes com elementos aleatórios
-    //srand(time(NULL));
-
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             matriz1[i*N+j] = 2.0;
             matriz2[i*N+j] = 3.0;
         }
     }
-
-
-    num_threads = omp_get_num_threads();
-    int thread_id = omp_get_thread_num();
         
     // Calcular a soma das matrizes de forma paralela
     t_i = omp_get_wtime();
@@ -82,6 +75,7 @@ int main(int argc, char *argv[]) {
             }    
         }
     }
+    
 
     if (passou == 1)
 	    printf ("Passou !!!\n");
@@ -93,7 +87,6 @@ int main(int argc, char *argv[]) {
     free(matriz1);
     free(matriz2);
     free(resultado);
-
 
     return 0;
 }

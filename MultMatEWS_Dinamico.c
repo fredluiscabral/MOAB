@@ -25,7 +25,7 @@ void multMatrizes(double* matriz1, double* matriz2, double* resultado, int N, in
             fim = fim+resto;
         }	        		    
         
-        for (int i = inicio; i < fim; ++i) {
+        for (int i = inicio; i <= fim; ++i) {
             for (int j = 0; j < N; ++j) {
                 double sum = 0.0;
                 for (int k = 0; k < N; ++k) {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
             }    
         }
     }
-    
+
 
     if (passou == 1)
 	    printf ("Passou !!!\n");
